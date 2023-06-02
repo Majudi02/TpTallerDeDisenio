@@ -19,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -46,7 +45,10 @@ class MainActivity : ComponentActivity() {
                     val isLoading = remember { mutableStateOf(false) }
 
                     // Listen to Retrofit response
-                    viewModel = ViewModelProvider(this, PokedexViewModelFactory())[PokedexViewModel::class.java]
+                    viewModel = ViewModelProvider(
+                        this,
+                        PokedexViewModelFactory()
+                    )[PokedexViewModel::class.java]
 
 
                     lifecycleScope.launch {
@@ -64,8 +66,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-
-                    main()
+                    main(pokemonList)
 
 
                 }
@@ -75,6 +76,7 @@ class MainActivity : ComponentActivity() {
 
     private fun showPokedex(pokedex: Pokedex, loading: MutableState<Boolean>) {
         loading.value = false
+        updatePokedex(pokedex.results)
     }
 
     private fun handlerError() {
@@ -105,24 +107,25 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun main() {
+    fun main(pokemonList: MutableList<PokedexResults>) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
 
             for (i in 0..12) {
                 item {
                     Row(modifier = Modifier.fillMaxWidth()) {
                         AsyncImage(
-                            model ="https://w7.pngwing.com/pngs/179/816/png-transparent-poke-ball-thumbnail.png",
+                            //    model ="https://w7.pngwing.com/pngs/179/816/png-transparent-poke-ball-thumbnail.png",
+                            model = pokemonList[1].url,
                             contentDescription = "fOTO",
                             modifier = Modifier.size(130.dp, 130.dp)
                         )
                         AsyncImage(
-                            model ="https://w7.pngwing.com/pngs/179/816/png-transparent-poke-ball-thumbnail.png",
+                            model = "https://w7.pngwing.com/pngs/179/816/png-transparent-poke-ball-thumbnail.png",
                             contentDescription = "fOTO",
                             modifier = Modifier.size(130.dp, 130.dp)
                         )
                         AsyncImage(
-                            model ="https://w7.pngwing.com/pngs/179/816/png-transparent-poke-ball-thumbnail.png",
+                            model = "https://w7.pngwing.com/pngs/179/816/png-transparent-poke-ball-thumbnail.png",
                             contentDescription = "fOTO",
                             modifier = Modifier.size(130.dp, 130.dp)
                         )
@@ -130,6 +133,13 @@ class MainActivity : ComponentActivity() {
 
                 }
             }
+        }
+    }
+
+    fun updatePokedex(results: List<PokedexResults>?) {
+        pokemonList.clear()
+        if (results != null) {
+            pokemonList.addAll(results)
         }
     }
 }
